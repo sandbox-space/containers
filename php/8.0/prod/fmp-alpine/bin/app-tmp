@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd $APP_TMP
+$SHELL

@@ -1,0 +1,1 @@
+FROM registry.gitlab.com/tomaskubat-sandbox/containers/mariadb:10.5-prod-focal
