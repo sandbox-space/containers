@@ -1,6 +1,6 @@
 ### Stage Build
 
-FROM php:8.0-fpm-alpine AS stage_build
+FROM php:8.0.0-fpm-alpine AS stage_build
 
 RUN apk add --no-cache icu-dev \
   && docker-php-ext-install \
@@ -13,7 +13,7 @@ RUN apk add --no-cache icu-dev \
 
 ### Stage Final
 
-FROM php:8.0-fpm-alpine AS stage_final
+FROM php:8.0.0-fpm-alpine AS stage_final
 
 # set system timezone
 ARG TZ='Europe/Prague'

@@ -4,7 +4,7 @@ FROM composer:2 AS stage_composer
 
 ### Stage Build
 
-FROM registry.gitlab.com/tomaskubat-sandbox/containers/php:8.0-prod-fmp-alpine AS stage_build
+FROM tomaskubat/php-prod:8.0.0-fpm-alpine AS stage_build
 
 USER 0:0
 
@@ -16,7 +16,7 @@ RUN apk add --no-cache $PHPIZE_DEPS \
 
 ### Stage Final
 
-FROM registry.gitlab.com/tomaskubat-sandbox/containers/php:8.0-prod-fmp-alpine AS stage_final
+FROM tomaskubat/php-prod:8.0.0-fpm-alpine AS stage_final
 
 USER 0:0
 
