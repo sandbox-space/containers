@@ -30,5 +30,3 @@ RUN apk add --no-cache vim mc \
 
 COPY conf/ "$PHP_INI_DIR"
 COPY conf.d/ "$PHP_INI_DIR/conf.d"
-
-USER 1000:1000
