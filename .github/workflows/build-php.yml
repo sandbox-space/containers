@@ -3,7 +3,7 @@ name: Build PHP 8.0.x Docker images (prod & dev)
 on: 
   push:
   schedule:
-    - cron: '30 * * * *'
+    - cron: '30 1 * * *'
 
 jobs:
   set_missing_tags:
@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Download tags
         run: |
-          curl -s 'https://tomask.space/tag/tomaskubat/php-prod/missing?against=library/php&filter=^8\.0\.(\d%2B)-fpm-alpine$' > missing_tags.json
+          curl -s 'https://semver-api.tomask.space/tag/tomaskubat/php-prod/missing?against=library/php&filter=^8\.0\.(\d%2B)-fpm-alpine$' > missing_tags.json
           ls -la missing_tags.json
           cat missing_tags.json | jq
       - id: missing_tags_json
