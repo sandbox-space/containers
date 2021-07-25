@@ -11,7 +11,11 @@ jobs:
     steps:
       - name: Download tags
         run: |
-          curl -s 'https://semver-api.tomask.space/tag/tomaskubat/php-prod/missing?against=library/php&filter=^8\.0\.(\d%2B)-fpm-alpine$' > missing_tags.json
+          curl -s -i -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/tomaskubat/php-prod/list?filter=^8\.0\.(\d%2B)-fpm-alpine$'
+          ls -la list_tags.json
+          cat list_tags.json
+
+          curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/tomaskubat/php-prod/missing?against=library/php&filter=^8\.0\.(\d%2B)-fpm-alpine$'
           ls -la missing_tags.json
           cat missing_tags.json | jq
       - id: missing_tags_json
