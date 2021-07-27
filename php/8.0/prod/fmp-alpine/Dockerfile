@@ -21,6 +21,7 @@ ENV DEFAULT_TZ ${TZ}
 
 # php paths
 ENV PHP_SESSION_PATH='/var/lib/php/session'
+ENV PHPFPM_INI_DIR="$PHP_INI_DIR/../"
 
 COPY --from=stage_build /root/php_extensions/ /root/php_extensions/
 COPY bin/ /usr/local/bin/
@@ -41,7 +42,7 @@ RUN apk add --no-cache icu \
   # create working user
   && set -eux \
   && addgroup -g 1000 -S app \
-  && adduser -u 1000 -h /srv -s /bin/ash -D -G app app \
+  && adduser -u 1000 -h /src -s /bin/ash -D -G app app \
   # php file session storage
   && mkdir -pv "$PHP_SESSION_PATH" \
   && chown 1000:1000 "$PHP_SESSION_PATH" \
@@ -49,8 +50,8 @@ RUN apk add --no-cache icu \
   && chmod ago+x /etc/profile.d/* \ 
   && chmod ago+x /usr/local/bin/* 
 
-COPY conf/ "$PHP_INI_DIR"
-COPY conf.d/ "$PHP_INI_DIR/conf.d"
+COPY php/ "$PHP_INI_DIR"
+COPY php-fpm/ "$PHPFPM_INI_DIR"
 
 WORKDIR /src
 USER 1000:1000

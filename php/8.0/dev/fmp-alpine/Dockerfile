@@ -4,7 +4,7 @@ FROM composer:2 AS stage_composer
 
 ### Stage Build
 
-FROM tomaskubat/php-prod:8.0.0-fpm-alpine AS stage_build
+FROM tomaskubat/php-prod:8.0.latest-fpm-alpine AS stage_build
 
 USER 0:0
 
@@ -16,7 +16,7 @@ RUN apk add --no-cache $PHPIZE_DEPS \
 
 ### Stage Final
 
-FROM tomaskubat/php-prod:8.0.0-fpm-alpine AS stage_final
+FROM tomaskubat/php-prod:8.0.latest-fpm-alpine AS stage_final
 
 USER 0:0
 
@@ -28,5 +28,4 @@ RUN apk add --no-cache vim mc \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && mv /root/php_extensions/* $PHP_EXTENSIONS_PATH/
 
-COPY conf/ "$PHP_INI_DIR"
-COPY conf.d/ "$PHP_INI_DIR/conf.d"
+COPY php/ "$PHP_INI_DIR"
