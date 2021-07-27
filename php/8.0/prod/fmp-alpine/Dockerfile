@@ -21,7 +21,7 @@ ENV DEFAULT_TZ ${TZ}
 
 # php paths
 ENV PHP_SESSION_PATH='/var/lib/php/session'
-ENV PHPFPM_INI_DIR="$PHP_INI_DIR/../"
+ENV LOCAL_ETC_DIR="/usr/local/etc"
 
 COPY --from=stage_build /root/php_extensions/ /root/php_extensions/
 COPY bin/ /usr/local/bin/
@@ -34,9 +34,8 @@ RUN apk add --no-cache icu \
   && rm $PHP_EXTENSIONS_PATH/* \
   && mv /root/php_extensions/* $PHP_EXTENSIONS_PATH/ \
   && rm -rf /root/php_extensions/ \
-  # clean php configs
-  && rm $PHP_INI_DIR/php.ini* \
-  && rm $PHP_INI_DIR/conf.d/* \
+  # clean local configs (php & php-fpm)
+  && rm -rfv $LOCAL_ETC_DIR/* \
   # clean others
   && rm /usr/local/bin/phpdbg \
   # create working user
@@ -50,8 +49,7 @@ RUN apk add --no-cache icu \
   && chmod ago+x /etc/profile.d/* \ 
   && chmod ago+x /usr/local/bin/* 
 
-COPY php/ "$PHP_INI_DIR"
-COPY php-fpm/ "$PHPFPM_INI_DIR"
+COPY etc/ "$LOCAL_ETC_DIR"
 
 WORKDIR /src
 USER 1000:1000

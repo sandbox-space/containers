@@ -28,4 +28,4 @@ RUN apk add --no-cache vim mc \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && mv /root/php_extensions/* $PHP_EXTENSIONS_PATH/
 
-COPY php/ "$PHP_INI_DIR"
+COPY etc/ "$LOCAL_ETC_DIR"
