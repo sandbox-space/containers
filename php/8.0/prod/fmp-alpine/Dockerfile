@@ -5,6 +5,7 @@ FROM php:8.0.0-fpm-alpine AS stage_build
 RUN apk add --no-cache icu-dev \
   && docker-php-ext-install \
     intl \
+    pcntl \
     opcache \
     pdo_mysql \
   && mkdir -p /root/php_extensions \
