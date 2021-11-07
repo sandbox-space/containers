@@ -4,7 +4,7 @@ FROM composer:2 AS stage_composer
 
 ### Stage s3cmd
 
-FROM tomaskubat/php-prod:8.0.0-fpm-alpine AS stage_s3cmd
+FROM sandboxspace/php-prod:8.0.0-fpm-alpine AS stage_s3cmd
 
 USER 0:0
 
@@ -17,7 +17,7 @@ RUN pip install python-magic \
 
 ### Stage Build
 
-FROM tomaskubat/php-prod:8.0.0-fpm-alpine AS stage_build
+FROM sandboxspace/php-prod:8.0.0-fpm-alpine AS stage_build
 
 USER 0:0
 
@@ -29,7 +29,7 @@ RUN apk add --no-cache $PHPIZE_DEPS \
 
 ### Stage Final
 
-FROM tomaskubat/php-prod:8.0.0-fpm-alpine AS stage_final
+FROM sandboxspace/php-prod:8.0.0-fpm-alpine AS stage_final
 
 USER 0:0
 

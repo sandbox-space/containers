@@ -11,11 +11,11 @@ jobs:
     steps:
       - name: Download tags
         run: |
-          curl -s -i -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/tomaskubat/php-prod/list?filter=^8\.0\.(\d%2B)-fpm-alpine$'
+          curl -s -i -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/sandboxspace/php-prod/list?filter=^8\.0\.(\d%2B)-fpm-alpine$'
           ls -la list_tags.json
           cat list_tags.json
 
-          curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/tomaskubat/php-prod/missing?against=library/php&filter=^8\.0\.(\d%2B)-fpm-alpine$'
+          curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/sandboxspace/php-prod/missing?against=library/php&filter=^8\.0\.(\d%2B)-fpm-alpine$'
           ls -la missing_tags.json
           cat missing_tags.json | jq
       - id: missing_tags_json
@@ -88,7 +88,7 @@ jobs:
           file: php/8.0/prod/fmp-alpine/Dockerfile.tagged
           context: php/8.0/prod/fmp-alpine
           push: true
-          tags: tomaskubat/php-prod:${{ matrix.tag }}
+          tags: sandboxspace/php-prod:${{ matrix.tag }}
           platforms: linux/amd64
 
       - name: Prod image digest
@@ -101,7 +101,7 @@ jobs:
           file: php/8.0/dev/fmp-alpine/Dockerfile.tagged
           context: php/8.0/dev/fmp-alpine
           push: true
-          tags: tomaskubat/php-dev:${{ matrix.tag }}
+          tags: sandboxspace/php-dev:${{ matrix.tag }}
           platforms: linux/amd64
 
       - name: Dev image digest
@@ -113,11 +113,11 @@ jobs:
           then 
             echo 'Taging as latest version'
 
-            docker pull tomaskubat/php-prod@${{ steps.docker_build_prod.outputs.digest }}
-            docker tag tomaskubat/php-prod@${{ steps.docker_build_prod.outputs.digest }} tomaskubat/php-prod:8.0.latest-fpm-alpine
-            docker push tomaskubat/php-prod:8.0.latest-fpm-alpine
+            docker pull sandboxspace/php-prod@${{ steps.docker_build_prod.outputs.digest }}
+            docker tag sandboxspace/php-prod@${{ steps.docker_build_prod.outputs.digest }} sandboxspace/php-prod:8.0.latest-fpm-alpine
+            docker push sandboxspace/php-prod:8.0.latest-fpm-alpine
 
-            docker pull tomaskubat/php-dev@${{ steps.docker_build_dev.outputs.digest }}
-            docker tag tomaskubat/php-dev@${{ steps.docker_build_dev.outputs.digest }} tomaskubat/php-dev:8.0.latest-fpm-alpine
-            docker push tomaskubat/php-dev:8.0.latest-fpm-alpine
+            docker pull sandboxspace/php-dev@${{ steps.docker_build_dev.outputs.digest }}
+            docker tag sandboxspace/php-dev@${{ steps.docker_build_dev.outputs.digest }} sandboxspace/php-dev:8.0.latest-fpm-alpine
+            docker push sandboxspace/php-dev:8.0.latest-fpm-alpine
           fi

@@ -8,13 +8,13 @@ build:
 	docker build \
 		--file Dockerfile \
 		--build-arg VERSION="${VERSION}" \
-		--tag tomaskubat/s3cmd:${LATEST_VERSION_TAG} \
-		--tag tomaskubat/s3cmd:${STATIC_TAG} \
+		--tag sandboxspace/s3cmd:${LATEST_VERSION_TAG} \
+		--tag sandboxspace/s3cmd:${STATIC_TAG} \
 		.
 
 publish:
-	docker push tomaskubat/s3cmd:${LATEST_VERSION_TAG}
-	docker push tomaskubat/s3cmd:${STATIC_TAG}
+	docker push sandboxspace/s3cmd:${LATEST_VERSION_TAG}
+	docker push sandboxspace/s3cmd:${STATIC_TAG}
 
 update_base_images:
 	docker pull alpine:latest

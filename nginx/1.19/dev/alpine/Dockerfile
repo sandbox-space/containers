@@ -1,1 +1,1 @@
-FROM tomaskubat/nginx-prod:1.19.0-alpine
+FROM sandboxspace/nginx-prod:1.19.0-alpine

@@ -11,25 +11,25 @@ prod_build:
 	sed "s/${PATERN_VERSION}/${LATEST_VERSION}/" prod/focal/Dockerfile > prod/focal/Dockerfile.tagged
 	docker build \
 		--file prod/focal/Dockerfile.tagged \
-		--tag tomaskubat/mariadb-prod:${LATEST_VERSION} \
-		--tag tomaskubat/mariadb-prod:${STATIC_TAG} \
+		--tag sandboxspace/mariadb-prod:${LATEST_VERSION} \
+		--tag sandboxspace/mariadb-prod:${STATIC_TAG} \
 		../
 
 prod_publish:
-	docker push tomaskubat/mariadb-prod:${LATEST_VERSION}
-	docker push tomaskubat/mariadb-prod:${STATIC_TAG}
+	docker push sandboxspace/mariadb-prod:${LATEST_VERSION}
+	docker push sandboxspace/mariadb-prod:${STATIC_TAG}
 
 dev_build:
 	sed "s/${PATERN_VERSION}/${LATEST_VERSION}/" dev/focal/Dockerfile > dev/focal/Dockerfile.tagged
 	docker build \
 		--file dev/focal/Dockerfile.tagged \
-		--tag tomaskubat/mariadb-dev:${LATEST_VERSION} \
-		--tag tomaskubat/mariadb-dev:${STATIC_TAG} \
+		--tag sandboxspace/mariadb-dev:${LATEST_VERSION} \
+		--tag sandboxspace/mariadb-dev:${STATIC_TAG} \
 		../
 
 dev_publish:
-	docker push tomaskubat/mariadb-dev:${LATEST_VERSION}
-	docker push tomaskubat/mariadb-dev:${STATIC_TAG}
+	docker push sandboxspace/mariadb-dev:${LATEST_VERSION}
+	docker push sandboxspace/mariadb-dev:${STATIC_TAG}
 
 update_base_images:
 	docker pull mariadb:${LATEST_VERSION}
