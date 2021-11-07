@@ -1,6 +1,6 @@
 ### Stage Build
 
-FROM php:8.0.0-fpm-alpine AS stage_build
+FROM php:7.2.0-fpm-alpine AS stage_build
 
 RUN apk add --no-cache icu-dev \
   && docker-php-ext-install \
@@ -14,20 +14,21 @@ RUN apk add --no-cache icu-dev \
 
 ### Stage Final
 
-FROM php:8.0.0-fpm-alpine AS stage_final
+FROM php:7.2.0-fpm-alpine AS stage_final
 
 # set system timezone
 ARG TZ='Europe/Prague'
 ENV DEFAULT_TZ ${TZ}
+ENV PATH=/root/bin:$PATH
 
 # php paths
 ENV PHP_SESSION_PATH='/var/lib/php/session'
 ENV LOCAL_ETC_DIR="/usr/local/etc"
 
 COPY --from=stage_build /root/php_extensions/ /root/php_extensions/
-COPY bin/ /usr/local/bin/
-COPY profile.d/ /etc/profile.d/
-# COPY docker-php-entrypoint /usr/local/bin/
+COPY _common/prod/fpm-alpine/bin/ /usr/local/bin/
+COPY _common/prod/fpm-alpine/profile.d/ /etc/profile.d/
+COPY _common/prod/fpm-alpine/docker-php-entrypoint /usr/local/bin/
 
 RUN apk add --no-cache icu \
   # copy builded extension from stage_build
@@ -50,7 +51,12 @@ RUN apk add --no-cache icu \
   && chmod ago+x /etc/profile.d/* \ 
   && chmod ago+x /usr/local/bin/* 
 
-COPY etc/ "$LOCAL_ETC_DIR"
+COPY _common/prod/fpm-alpine/etc/ "$LOCAL_ETC_DIR"
+
+# Those options is not support on PHP 7.2
+RUN true \
+  && sed -i "s/log_limit/; log_limit/" "$LOCAL_ETC_DIR/php-fpm.d/docker.conf" \
+  && sed -i "s/decorate_workers_output/; decorate_workers_output/" "$LOCAL_ETC_DIR/php-fpm.d/docker.conf"
 
 WORKDIR /src
 USER 1000:1000

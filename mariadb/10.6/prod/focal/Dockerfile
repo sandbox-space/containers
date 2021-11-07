@@ -1,4 +1,4 @@
-FROM mariadb:10.5.0-focal
+FROM mariadb:10.6.0-focal
 
 ENV PATH=/root/bin:$PATH
 

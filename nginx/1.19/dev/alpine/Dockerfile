@@ -1,1 +1,1 @@
-FROM registry.gitlab.com/tomaskubat-sandbox/containers/nginx:1.19-prod-alpine
+FROM tomaskubat/nginx-prod:1.19.0-alpine

@@ -1,0 +1,1 @@
+FROM tomaskubat/nginx-prod:1.20.0-alpine
