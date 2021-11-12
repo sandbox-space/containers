@@ -1,0 +1,146 @@
+name: Reusable build workflow
+
+on:
+  workflow_call:
+    inputs:
+      what:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      environments:
+        required: true
+        type: string
+      platform:
+        required: true
+        type: string
+      placeholder_tag_value:
+        required: true
+        type: string
+      build_tags:
+        required: true
+        type: string
+      newest_tag:
+        required: true
+        type: string
+      push_repository_prefix:
+        required: true
+        type: string
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+
+jobs:
+  debug_inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print
+        run: |
+          echo "what:                   ${{ inputs.what }}"
+          echo "version:                ${{ inputs.version }}"
+          echo "environments:           ${{ inputs.environments }}"
+          echo "platform:               ${{ inputs.platform }}"
+          echo "placeholder_tag_value:  ${{ inputs.placeholder_tag_value }}"
+          echo "newest_tag:             ${{ inputs.newest_tag }}"
+          echo "build_tags:             ${{ inputs.build_tags }}"
+          echo "push_repository_prefix: ${{ inputs.push_repository_prefix }}"
+
+  build:
+    name: Build docker container
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix: 
+        tag: ${{ fromJSON(inputs.build_tags) }}
+    
+    steps:
+      - name: Print inputs
+        run: |
+          echo "what:                   ${{ inputs.what }}"
+          echo "version:                ${{ inputs.version }}"
+          echo "environments:           ${{ inputs.environments }}"
+          echo "platform:               ${{ inputs.platform }}"
+          echo "placeholder_tag_value:  ${{ inputs.placeholder_tag_value }}"
+          echo "newest_tag:             ${{ inputs.newest_tag }}"
+          echo "push_repository_prefix: ${{ inputs.push_repository_prefix }}"
+          echo "matrix.tag:             ${{ matrix.tag }}"
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        # with:
+        #   install: true
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # - name: Inspect builder
+      #   run: |
+      #     echo "Name:      ${{ steps.buildx.outputs.name }}"
+      #     echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+      #     echo "Status:    ${{ steps.buildx.outputs.status }}"
+      #     echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+      #     echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+
+      - name: Docker Build
+        run: |
+          WHAT_VERSION_DIR="${{ inputs.what }}/${{ inputs.version }}"
+          if [ ! -d "$WHAT_VERSION_DIR" ]; then
+            echo "Directory ${WHAT_VERSION_DIR} doesn't exist" 1>&2
+            exit 1
+          fi
+
+          cd $WHAT_VERSION_DIR
+          echo "pwd: $(pwd)"
+
+          for ENV_DIR in ${{ inputs.environments }}; do
+            ENV_PLATFORM_DIR="${ENV_DIR}/${{ inputs.platform }}"
+            if [ ! -d "$ENV_PLATFORM_DIR" ]; then
+              echo "Directory ${ENV_PLATFORM_DIR} doesn't exist" 1>&2
+              continue
+            fi
+
+            cd $ENV_PLATFORM_DIR
+            echo "pwd: $(pwd)"
+
+            if [ ! -f "Dockerfile" ]; then
+              echo "Dockerfile ${ENV_PLATFORM_DIR}/Dockerfile doesn't exist" 1>&2
+              continue
+            fi
+
+            sed "s/${{ inputs.placeholder_tag_value }}/${{ matrix.tag }}/" Dockerfile > Dockerfile.tagged
+            
+            IMAGE_TAG="${{ inputs.push_repository_prefix }}-${ENV_DIR}:${{ matrix.tag }}"
+            echo "IMAGE_TAG: ${IMAGE_TAG}"
+
+            BUILD_CMD="docker buildx build \
+              --push \
+              --platform=linux/amd64 \
+              --progress=plain \
+              --file Dockerfile.tagged \
+              --tag $IMAGE_TAG"
+
+            if [[ "${{ matrix.tag }}" == "${{ inputs.newest_tag }}" ]]; then
+              IMAGE_TAG_LATEST="${{ inputs.push_repository_prefix }}-${ENV_DIR}:${{ inputs.version }}.latest-${{ inputs.platform }}"
+              echo "IMAGE_TAG_LATEST: ${IMAGE_TAG_LATEST}"
+              BUILD_CMD="${BUILD_CMD} --tag ${IMAGE_TAG_LATEST}"
+            fi
+
+            BUILD_CMD="${BUILD_CMD} ../../../"
+            echo "BUILD_CMD: ${BUILD_CMD}"
+            eval $BUILD_CMD
+
+            cd ../../
+          done
