@@ -1,5 +1,5 @@
 PATERN_VERSION := 8.0.0-fpm-alpine
-LATEST_VERSION := 8.0.12-fpm-alpine
+LATEST_VERSION := 8.0.0-fpm-alpine
 STATIC_TAG := 8.0.latest-fpm-alpine
 
 all: update_base_images build publish
@@ -21,11 +21,13 @@ prod_publish:
 
 dev_build:
 	sed "s/${PATERN_VERSION}/${LATEST_VERSION}/" dev/fpm-alpine/Dockerfile > dev/fpm-alpine/Dockerfile.tagged
-	docker build \
+	docker buildx build \
+		--platform=linux/amd64 \
+		--progress=plain \
 		--file dev/fpm-alpine/Dockerfile.tagged \
 		--tag sandboxspace/php-dev:${LATEST_VERSION} \
 		--tag sandboxspace/php-dev:${STATIC_TAG} \
-		../
+		../ 
 
 dev_publish:
 	docker push sandboxspace/php-dev:${LATEST_VERSION}
