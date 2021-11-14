@@ -1,0 +1,53 @@
+name: Nginx 1.20 alpine (@on-push)
+
+on:
+  push:
+    branches:
+      - main
+      - refactor_workflow
+    paths:
+      - 'nginx/_common/**'
+      - 'nginx/1.20/*/alpine/*'
+      - '.github/workflows/build-workflow.yml'
+      - '.github/workflows/build-push-nginx-1.20-alpine.yml'
+
+jobs:
+  examine_tags:
+    runs-on: ubuntu-latest
+    steps:
+      - id: examined_tags
+        run: |
+          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/library/nginx/newest?filter=^1\.20\.(\d%2B)-alpine$'
+          NEWEST_TAG=$(cat newest_tag.json | jq -c '.tags[0]')
+          echo "NEWEST_TAG: $NEWEST_TAG"
+          echo "::set-output name=newest_tag::${NEWEST_TAG}"
+          
+          curl -s -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/library/nginx/list?filter=^1\.20\.(\d%2B)-alpine$'
+          LIST_TAGS=$(cat list_tags.json | jq -c '.tags')
+          echo "LIST_TAGS: $LIST_TAGS"
+          echo "::set-output name=list_tags::${LIST_TAGS}"
+
+          COUNT_TAGS=$(cat list_tags.json | jq '.tags' | jq 'length')
+          echo "COUNT_TAGS: $COUNT_TAGS"
+          echo "::set-output name=count_tags::${COUNT_TAGS}"
+    outputs:
+      newest_tag: ${{ steps.examined_tags.outputs.newest_tag }}
+      list_tags: ${{ steps.examined_tags.outputs.list_tags }}
+      count_tags: ${{ steps.examined_tags.outputs.count_tags }}
+
+  build_tag:
+    needs: examine_tags
+    if: ${{ needs.examine_tags.outputs.count_tags > 0 }}
+    uses:  sandbox-space/containers/.github/workflows/build-workflow.yml@main
+    with:
+      what: "nginx"
+      version: "1.20"
+      environments: "prod dev"
+      platform: "alpine"
+      placeholder_tag_value: "1.20.0-alpine"
+      build_tags: ${{ needs.examine_tags.outputs.list_tags }}
+      newest_tag: ${{ needs.examine_tags.outputs.newest_tag }}
+      push_repository_prefix: "sandboxspace/nginx"
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
