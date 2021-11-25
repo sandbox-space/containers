@@ -71,8 +71,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: inux/amd64,linux/arm64
 
       - name: Set up Docker Buildx
         id: buildx
@@ -86,13 +88,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - name: Inspect builder
-      #   run: |
-      #     echo "Name:      ${{ steps.buildx.outputs.name }}"
-      #     echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-      #     echo "Status:    ${{ steps.buildx.outputs.status }}"
-      #     echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-      #     echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      - name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
       - name: Docker Build
         run: |
@@ -127,7 +129,7 @@ jobs:
 
             BUILD_CMD="docker buildx build \
               --push \
-              --platform=linux/amd64 \
+              --platform=linux/amd64,linux/arm64 \
               --progress=plain \
               --file Dockerfile.tagged \
               --tag $IMAGE_TAG"

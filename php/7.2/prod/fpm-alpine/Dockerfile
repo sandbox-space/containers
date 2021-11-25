@@ -8,6 +8,7 @@ RUN apk add --no-cache icu-dev \
     pcntl \
     opcache \
     pdo_mysql \
+    sockets \
   && mkdir -p /root/php_extensions \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && mv $PHP_EXTENSIONS_PATH/* /root/php_extensions/

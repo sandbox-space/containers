@@ -1,6 +1,7 @@
 PATERN_VERSION := 8.0.0-fpm-alpine
 LATEST_VERSION := 8.0.0-fpm-alpine
 STATIC_TAG := 8.0.latest-fpm-alpine
+PLATFORM := linux/arm64
 
 all: update_base_images build publish
 
@@ -10,6 +11,7 @@ publish: prod_publish dev_publish
 prod_build:
 	sed "s/${PATERN_VERSION}/${LATEST_VERSION}/" prod/fpm-alpine/Dockerfile > prod/fpm-alpine/Dockerfile.tagged
 	docker build \
+		--platform=${PLATFORM} \
 		--file prod/fpm-alpine/Dockerfile.tagged \
 		--tag sandboxspace/php-prod:${LATEST_VERSION} \
 		--tag sandboxspace/php-prod:${STATIC_TAG} \
@@ -22,8 +24,7 @@ prod_publish:
 dev_build:
 	sed "s/${PATERN_VERSION}/${LATEST_VERSION}/" dev/fpm-alpine/Dockerfile > dev/fpm-alpine/Dockerfile.tagged
 	docker buildx build \
-		--platform=linux/amd64 \
-		--progress=plain \
+		--platform=${PLATFORM} \
 		--file dev/fpm-alpine/Dockerfile.tagged \
 		--tag sandboxspace/php-dev:${LATEST_VERSION} \
 		--tag sandboxspace/php-dev:${STATIC_TAG} \
@@ -34,7 +35,7 @@ dev_publish:
 	docker push sandboxspace/php-dev:${STATIC_TAG}
 
 update_base_images:
-	docker pull php:${LATEST_VERSION}
-	docker pull composer:2
+	docker pull --platform=${PLATFORM} php:${LATEST_VERSION}
+	docker pull --platform=${PLATFORM} composer:2
 
 pull_base_images: update_base_images
