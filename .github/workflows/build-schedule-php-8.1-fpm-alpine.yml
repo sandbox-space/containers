@@ -1,0 +1,46 @@
+name: PHP 8.1 fpm-alpine (@schedule)
+
+on:
+  schedule:
+    - cron: '59 9 * * *'
+
+jobs:
+  examine_tags:
+    runs-on: ubuntu-latest
+    steps:
+      - id: examined_tags
+        run: |
+          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/library/php/newest?filter=^8\.1\.(\d%2B)-fpm-alpine$'
+          NEWEST_TAG=$(cat newest_tag.json | jq -c '.tags[0]')
+          echo "NEWEST_TAG: $NEWEST_TAG"
+          echo "::set-output name=newest_tag::${NEWEST_TAG}"
+          
+          curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/sandboxspace/php-prod/missing?against=library/php&filter=^8\.1\.(\d%2B)-fpm-alpine$'
+          MISSING_TAGS=$(cat missing_tags.json)
+          echo "MISSING_TAGS: $MISSING_TAGS"
+          echo "::set-output name=missing_tags::${MISSING_TAGS}"
+
+          COUNT_TAGS=$(cat missing_tags.json | jq 'length')
+          echo "COUNT_TAGS: $COUNT_TAGS"
+          echo "::set-output name=count_tags::${COUNT_TAGS}"
+    outputs:
+      newest_tag: ${{ steps.examined_tags.outputs.newest_tag }}
+      missing_tags: ${{ steps.examined_tags.outputs.missing_tags }}
+      count_tags: ${{ steps.examined_tags.outputs.count_tags }}
+
+  build_tag:
+    needs: examine_tags
+    if: ${{ needs.examine_tags.outputs.count_tags > 0 }}
+    uses:  sandbox-space/containers/.github/workflows/build-workflow.yml@main
+    with:
+      what: "php"
+      version: "8.1"
+      environments: "prod dev"
+      platform: "fpm-alpine"
+      placeholder_tag_value: "8.1.0-fpm-alpine"
+      build_tags: ${{ needs.examine_tags.outputs.missing_tags }}
+      newest_tag: ${{ needs.examine_tags.outputs.newest_tag }}
+      push_repository_prefix: "sandboxspace/php"
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
