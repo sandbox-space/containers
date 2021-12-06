@@ -1,7 +1,12 @@
 PATERN_VERSION := 8.0.0-fpm-alpine
 LATEST_VERSION := 8.0.0-fpm-alpine
 STATIC_TAG := 8.0.latest-fpm-alpine
-PLATFORM := linux/arm64
+
+ifeq ($(shell uname -p),arm)
+  PLATFORM=linux/arm64
+else
+  PLATFORM=linux/amd64
+endif
 
 all: update_base_images build publish
 
