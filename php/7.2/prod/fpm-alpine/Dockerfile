@@ -2,13 +2,26 @@
 
 FROM php:7.2.0-fpm-alpine AS stage_build
 
-RUN apk add --no-cache icu-dev \
+RUN apk add --no-cache \
+    # ext intl dependency
+    icu-dev \
+    # ext gd dependency
+    libpng-dev \
+    # ext soap dependency
+    libxml2-dev \
+    # ext imagick dependency
+    $PHPIZE_DEPS imagemagick-dev \
   && docker-php-ext-install \
+    gd \
     intl \
     pcntl \
     opcache \
     pdo_mysql \
-    sockets \
+    soap \
+    # temporary disabled because bug in 8.0 and 8.1
+    # sockets \ 
+  && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
+  && yes '' | pecl install imagick \
   && mkdir -p /root/php_extensions \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && mv $PHP_EXTENSIONS_PATH/* /root/php_extensions/
@@ -31,7 +44,15 @@ COPY _common/prod/fpm-alpine/bin/ /usr/local/bin/
 COPY _common/prod/fpm-alpine/profile.d/ /etc/profile.d/
 COPY _common/prod/fpm-alpine/docker-php-entrypoint /usr/local/bin/
 
-RUN apk add --no-cache icu \
+RUN apk add --no-cache \
+  # ext intl dependency
+  icu \
+  # ext gd dependency
+  libpng \
+  # ext soap dependency
+  libxml2 \
+  # ext imagick dependency
+  imagemagick libgomp \
   # copy builded extension from stage_build
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && rm $PHP_EXTENSIONS_PATH/* \
