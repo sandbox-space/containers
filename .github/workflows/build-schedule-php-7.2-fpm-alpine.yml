@@ -10,12 +10,12 @@ jobs:
     steps:
       - id: examined_tags
         run: |
-          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.devtag/library/php/newest?filter=^7\.2\.(\d%2B)-fpm-alpine$'
+          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/library/php/newest?filter=^7\.2\.(\d%2B)-fpm-alpine$'
           NEWEST_TAG=$(cat newest_tag.json | jq -c '.tags[0]')
           echo "NEWEST_TAG: $NEWEST_TAG"
           echo "::set-output name=newest_tag::${NEWEST_TAG}"
           
-          curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.devtag/sandboxspace/php-prod/missing?against=library/php&filter=^7\.2\.(\d%2B)-fpm-alpine$'
+          curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/sandboxspace/php-prod/missing?against=library/php&filter=^7\.2\.(\d%2B)-fpm-alpine$'
           MISSING_TAGS=$(cat missing_tags.json)
           echo "MISSING_TAGS: $MISSING_TAGS"
           echo "::set-output name=missing_tags::${MISSING_TAGS}"
