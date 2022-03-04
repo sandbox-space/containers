@@ -10,12 +10,12 @@ jobs:
     steps:
       - id: examined_tags
         run: |
-          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/library/mariadb/newest?filter=^10\.6\.(\d%2B)-focal$'
+          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.devtag/library/mariadb/newest?filter=^10\.6\.(\d%2B)-focal$'
           NEWEST_TAG=$(cat newest_tag.json | jq -c '.tags[0]')
           echo "NEWEST_TAG: $NEWEST_TAG"
           echo "::set-output name=newest_tag::${NEWEST_TAG}"
           
-          curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/sandboxspace/mariadb-prod/missing?against=library/mariadb&filter=^10\.6\.(\d%2B)-focal$'
+          curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.devtag/sandboxspace/mariadb-prod/missing?against=library/mariadb&filter=^10\.6\.(\d%2B)-focal$'
           MISSING_TAGS=$(cat missing_tags.json)
           echo "MISSING_TAGS: $MISSING_TAGS"
           echo "::set-output name=missing_tags::${MISSING_TAGS}"

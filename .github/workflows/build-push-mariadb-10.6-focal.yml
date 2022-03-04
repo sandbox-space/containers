@@ -17,12 +17,12 @@ jobs:
     steps:
       - id: examined_tags
         run: |
-          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/library/mariadb/newest?filter=^10\.6\.(\d%2B)-focal$'
+          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.devtag/library/mariadb/newest?filter=^10\.6\.(\d%2B)-focal$'
           NEWEST_TAG=$(cat newest_tag.json | jq -c '.tags[0]')
           echo "NEWEST_TAG: $NEWEST_TAG"
           echo "::set-output name=newest_tag::${NEWEST_TAG}"
           
-          curl -s -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://semver-api.tomask.space/tag/library/mariadb/list?filter=^10\.6\.(\d%2B)-focal$'
+          curl -s -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.devtag/library/mariadb/list?filter=^10\.6\.(\d%2B)-focal$'
           LIST_TAGS=$(cat list_tags.json | jq -c '.tags')
           echo "LIST_TAGS: $LIST_TAGS"
           echo "::set-output name=list_tags::${LIST_TAGS}"
