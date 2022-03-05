@@ -1,7 +1,12 @@
 PATERN_VERSION := 10.6.0-focal
 LATEST_VERSION := 10.6.4-focal
 STATIC_TAG := 10.6.latest-focal
-PLATFORM := linux/arm64
+
+ifeq ($(shell uname -p),arm)
+  PLATFORM=linux/arm64
+else
+  PLATFORM=linux/amd64
+endif
 
 all: update_base_images build publish
 

@@ -61,7 +61,7 @@ RUN apk add --no-cache \
   # clean local configs (php & php-fpm)
   && rm -rfv $LOCAL_ETC_DIR/* \
   # clean others
-  && rm /usr/local/bin/phpdbg \
+  && rm -f /usr/local/bin/phpdbg \
   # create working user
   && set -eux \
   && addgroup -g 1000 -S app \

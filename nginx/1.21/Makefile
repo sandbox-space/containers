@@ -1,7 +1,12 @@
 PATERN_VERSION := 1.21.0-alpine
 LATEST_VERSION := 1.21.3-alpine
 STATIC_TAG := 1.21.latest-alpine
-PLATFORM := linux/arm64
+
+ifeq ($(shell uname -p),arm)
+  PLATFORM=linux/arm64
+else
+  PLATFORM=linux/amd64
+endif
 
 all: update_base_images build publish
 
