@@ -65,7 +65,7 @@ RUN apk add --no-cache \
   # create working user
   && set -eux \
   && addgroup -g 1000 -S app \
-  && adduser -u 1000 -h /src -s /bin/ash -D -G app app \
+  && adduser -u 1000 -h /app -s /bin/ash -D -G app app \
   # php file session storage
   && mkdir -pv "$PHP_SESSION_PATH" \
   && chown 1000:1000 "$PHP_SESSION_PATH" \
@@ -80,5 +80,5 @@ RUN true \
   && sed -i "s/log_limit/; log_limit/" "$LOCAL_ETC_DIR/php-fpm.d/docker.conf" \
   && sed -i "s/decorate_workers_output/; decorate_workers_output/" "$LOCAL_ETC_DIR/php-fpm.d/docker.conf"
 
-WORKDIR /src
+WORKDIR /app
 USER 1000:1000

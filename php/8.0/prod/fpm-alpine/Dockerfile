@@ -65,7 +65,7 @@ RUN apk add --no-cache \
   # create working user
   && set -eux \
   && addgroup -g 1000 -S app \
-  && adduser -u 1000 -h /src -s /bin/ash -D -G app app \
+  && adduser -u 1000 -h /app -s /bin/ash -D -G app app \
   # php file session storage
   && mkdir -pv "$PHP_SESSION_PATH" \
   && chown 1000:1000 "$PHP_SESSION_PATH" \
@@ -75,5 +75,5 @@ RUN apk add --no-cache \
 
 COPY _common/prod/fpm-alpine/etc/ "$LOCAL_ETC_DIR"
 
-WORKDIR /src
+WORKDIR /app
 USER 1000:1000
