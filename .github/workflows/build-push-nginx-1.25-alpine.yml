@@ -1,4 +1,4 @@
-name: Nginx 1.20 alpine (@on-push)
+name: Nginx 1.25 alpine (@on-push)
 
 on:
   push:
@@ -7,9 +7,9 @@ on:
       - refactor_workflow
     paths:
       - 'nginx/_common/**'
-      - 'nginx/1.20/*/alpine/*'
+      - 'nginx/1.25/*/alpine/*'
       - '.github/workflows/build-workflow.yml'
-      - '.github/workflows/build-push-nginx-1.20-alpine.yml'
+      - '.github/workflows/build-push-nginx-1.25-alpine.yml'
 
 jobs:
   examine_tags:
@@ -17,19 +17,19 @@ jobs:
     steps:
       - id: examined_tags
         run: |
-          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/library/nginx/newest?filter=^1\.20\.(\d%2B)-alpine$'
+          curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/library/nginx/newest?filter=^1\.25\.(\d%2B)-alpine$'
           NEWEST_TAG=$(cat newest_tag.json | jq -c '.tags[0]')
           echo "NEWEST_TAG: $NEWEST_TAG"
-          echo "::set-output name=newest_tag::${NEWEST_TAG}"
+          echo "newest_tag=${NEWEST_TAG}" >> "$GITHUB_OUTPUT"
           
-          curl -s -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/library/nginx/list?filter=^1\.20\.(\d%2B)-alpine$'
+          curl -s -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/library/nginx/list?filter=^1\.25\.(\d%2B)-alpine$'
           LIST_TAGS=$(cat list_tags.json | jq -c '.tags')
           echo "LIST_TAGS: $LIST_TAGS"
-          echo "::set-output name=list_tags::${LIST_TAGS}"
+          echo "list_tags=${LIST_TAGS}" >> "$GITHUB_OUTPUT"
 
           COUNT_TAGS=$(cat list_tags.json | jq '.tags' | jq 'length')
           echo "COUNT_TAGS: $COUNT_TAGS"
-          echo "::set-output name=count_tags::${COUNT_TAGS}"
+          echo "count_tags${COUNT_TAGS}" >> "$GITHUB_OUTPUT"
     outputs:
       newest_tag: ${{ steps.examined_tags.outputs.newest_tag }}
       list_tags: ${{ steps.examined_tags.outputs.list_tags }}
@@ -41,10 +41,10 @@ jobs:
     uses:  sandbox-space/containers/.github/workflows/build-workflow.yml@main
     with:
       what: "nginx"
-      version: "1.20"
+      version: "1.25"
       environments: "prod dev"
       platform: "alpine"
-      placeholder_tag_value: "1.20.0-alpine"
+      placeholder_tag_value: "1.25.0-alpine"
       build_tags: ${{ needs.examine_tags.outputs.list_tags }}
       newest_tag: ${{ needs.examine_tags.outputs.newest_tag }}
       push_repository_prefix: "sandboxspace/nginx"
