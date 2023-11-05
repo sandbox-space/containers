@@ -13,16 +13,16 @@ jobs:
           curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/library/mariadb/newest?filter=^10\.11\.(\d%2B)-jammy$'
           NEWEST_TAG=$(cat newest_tag.json | jq -c '.tags[0]')
           echo "NEWEST_TAG: $NEWEST_TAG"
-          echo "::set-output name=newest_tag::${NEWEST_TAG}"
+          echo "newest_tag=${NEWEST_TAG}" >> "$GITHUB_OUTPUT"
           
           curl -s -o missing_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/sandboxspace/mariadb-prod/missing?against=library/mariadb&filter=^10\.11\.(\d%2B)-jammy$'
           MISSING_TAGS=$(cat missing_tags.json)
           echo "MISSING_TAGS: $MISSING_TAGS"
-          echo "::set-output name=missing_tags::${MISSING_TAGS}"
+          echo "missing_tags=${MISSING_TAGS}" >> "$GITHUB_OUTPUT"
 
           COUNT_TAGS=$(cat missing_tags.json | jq 'length')
           echo "COUNT_TAGS: $COUNT_TAGS"
-          echo "::set-output name=count_tags::${COUNT_TAGS}"
+          echo "count_tags=${COUNT_TAGS}" >> "$GITHUB_OUTPUT"
     outputs:
       newest_tag: ${{ steps.examined_tags.outputs.newest_tag }}
       missing_tags: ${{ steps.examined_tags.outputs.missing_tags }}
