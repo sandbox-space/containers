@@ -20,16 +20,16 @@ jobs:
           curl -s -o newest_tag.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/library/php/newest?filter=^8\.1\.(\d%2B)-fpm-alpine$'
           NEWEST_TAG=$(cat newest_tag.json | jq -c '.tags[0]')
           echo "NEWEST_TAG: $NEWEST_TAG"
-          echo "::set-output name=newest_tag::${NEWEST_TAG}"
+          echo "newest_tag=${NEWEST_TAG}" >> "$GITHUB_OUTPUT"
           
           curl -s -o list_tags.json --header 'Authorization: ${{ secrets.SEMVER_API_TOKEN }}' 'https://sandbox-space-semver-api.deno.dev/tag/library/php/list?filter=^8\.1\.(\d%2B)-fpm-alpine$'
           LIST_TAGS=$(cat list_tags.json | jq -c '.tags')
           echo "LIST_TAGS: $LIST_TAGS"
-          echo "::set-output name=list_tags::${LIST_TAGS}"
+          echo "list_tags=${LIST_TAGS}" >> "$GITHUB_OUTPUT"
 
           COUNT_TAGS=$(cat list_tags.json | jq '.tags' | jq 'length')
           echo "COUNT_TAGS: $COUNT_TAGS"
-          echo "::set-output name=count_tags::${COUNT_TAGS}"
+          echo "count_tags=${COUNT_TAGS}" >> "$GITHUB_OUTPUT"
     outputs:
       newest_tag: ${{ steps.examined_tags.outputs.newest_tag }}
       list_tags: ${{ steps.examined_tags.outputs.list_tags }}
