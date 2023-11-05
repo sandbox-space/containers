@@ -29,7 +29,7 @@ jobs:
 
           COUNT_TAGS=$(cat list_tags.json | jq '.tags' | jq 'length')
           echo "COUNT_TAGS: $COUNT_TAGS"
-          echo "count_tags${COUNT_TAGS}" >> "$GITHUB_OUTPUT"
+          echo "count_tags=${COUNT_TAGS}" >> "$GITHUB_OUTPUT"
     outputs:
       newest_tag: ${{ steps.examined_tags.outputs.newest_tag }}
       list_tags: ${{ steps.examined_tags.outputs.list_tags }}
