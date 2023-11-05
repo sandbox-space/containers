@@ -1,0 +1,1 @@
+FROM sandboxspace/nginx-prod:1.25.0-alpine

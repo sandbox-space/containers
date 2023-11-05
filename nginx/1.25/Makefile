@@ -1,6 +1,6 @@
-PATERN_VERSION := 1.21.0-alpine
-LATEST_VERSION := 1.21.3-alpine
-STATIC_TAG := 1.21.latest-alpine
+PATERN_VERSION := 1.25.0-alpine
+LATEST_VERSION := 1.25.3-alpine
+STATIC_TAG := 1.25.latest-alpine
 
 ifeq ($(shell uname -p),arm)
   PLATFORM=linux/arm64
