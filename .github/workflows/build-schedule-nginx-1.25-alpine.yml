@@ -22,7 +22,7 @@ jobs:
 
           COUNT_TAGS=$(cat missing_tags.json | jq 'length')
           echo "COUNT_TAGS: $COUNT_TAGS"
-          echo "count_tags${COUNT_TAGS}" >> "$GITHUB_OUTPUT"
+          echo "count_tags=${COUNT_TAGS}" >> "$GITHUB_OUTPUT"
     outputs:
       newest_tag: ${{ steps.examined_tags.outputs.newest_tag }}
       missing_tags: ${{ steps.examined_tags.outputs.missing_tags }}
