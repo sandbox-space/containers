@@ -10,8 +10,7 @@ USER 0:0
 
 RUN apk add python3 py-pip py-setuptools git ca-certificates
 
-RUN pip install python-magic \
-  && git clone https://github.com/s3tools/s3cmd.git /tmp/s3cmd \
+RUN git clone https://github.com/s3tools/s3cmd.git /tmp/s3cmd \
   && cd /tmp/s3cmd \
   && python3 /tmp/s3cmd/setup.py install 
 
@@ -22,7 +21,7 @@ FROM sandboxspace/php-prod:8.3.0-fpm-alpine AS stage_build
 USER 0:0
 
 RUN apk add --no-cache --update $PHPIZE_DEPS linux-headers \
-  && pecl install xdebug-3.2.0RC2 \
+  && pecl install xdebug \
   && mkdir -p /root/php_extensions \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && mv $PHP_EXTENSIONS_PATH/* /root/php_extensions/

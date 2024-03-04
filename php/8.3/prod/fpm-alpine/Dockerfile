@@ -10,7 +10,8 @@ RUN apk add --no-cache \
     # ext soap dependency
     libxml2-dev \
     # ext imagick dependency
-    $PHPIZE_DEPS imagemagick-dev \
+    # is not compatible with 8.3 yet, last version 3.7.0 from january 2022 - https://pecl.php.net/package/imagick
+    # $PHPIZE_DEPS imagemagick-dev \
   && docker-php-ext-install \
     gd \
     intl \
@@ -21,7 +22,8 @@ RUN apk add --no-cache \
     # temporary disabled because bug in 8.0 and 8.1
     # sockets \ 
   && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
-  && yes '' | pecl install imagick \
+  # is not compatible with 8.3 yet, last version 3.7.0 from january 2022 - https://pecl.php.net/package/imagick
+  # && yes '' | pecl install imagick \
   && mkdir -p /root/php_extensions \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && mv $PHP_EXTENSIONS_PATH/* /root/php_extensions/
@@ -74,6 +76,9 @@ RUN apk add --no-cache \
   && chmod ago+x /usr/local/bin/* 
 
 COPY _common/prod/fpm-alpine/etc/ "$LOCAL_ETC_DIR"
+
+# is not compatible with 8.3 yet, last version 3.7.0 from january 2022 - https://pecl.php.net/package/imagick
+RUN rm -rfv $LOCAL_ETC_DIR/php/conf.d/10-ext-imagick.ini
 
 WORKDIR /app
 USER 1000:1000
