@@ -1,0 +1,49 @@
+name: Goose 3.22 alpine (@on-push)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'goose/3.22/*/alpine/*'
+      - '.github/workflows/build-workflow.yml'
+      - '.github/workflows/build-push-goose-3.22-alpine.yml'
+
+jobs:
+  examine_tags:
+    runs-on: ubuntu-latest
+    steps:
+      - id: examined_tags
+        run: |
+          NEWEST_TAG="3.22.1"
+          echo "NEWEST_TAG: $NEWEST_TAG"
+          echo "newest_tag=${NEWEST_TAG}" >> "$GITHUB_OUTPUT"
+          
+          LIST_TAGS='["3.22.1"]'
+          echo "LIST_TAGS: $LIST_TAGS"
+          echo "list_tags=${LIST_TAGS}" >> "$GITHUB_OUTPUT"
+
+          COUNT_TAGS=1
+          echo "COUNT_TAGS: $COUNT_TAGS"
+          echo "count_tags=${COUNT_TAGS}" >> "$GITHUB_OUTPUT"
+    outputs:
+      newest_tag: ${{ steps.examined_tags.outputs.newest_tag }}
+      list_tags: ${{ steps.examined_tags.outputs.list_tags }}
+      count_tags: ${{ steps.examined_tags.outputs.count_tags }}
+
+  build_tag:
+    needs: examine_tags
+    if: ${{ needs.examine_tags.outputs.count_tags > 0 }}
+    uses:  sandbox-space/containers/.github/workflows/build-workflow.yml@main
+    with:
+      what: "goose"
+      version: "3.22"
+      environments: "prod"
+      platform: "alpine"
+      placeholder_tag_value: "3.22.0"
+      build_tags: ${{ needs.examine_tags.outputs.list_tags }}
+      newest_tag: ${{ needs.examine_tags.outputs.newest_tag }}
+      push_repository_prefix: "sandboxspace/goose"
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
