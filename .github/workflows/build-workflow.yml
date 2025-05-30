@@ -51,6 +51,7 @@ jobs:
   build:
     name: Build docker container
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     strategy:
       matrix: 
