@@ -38,7 +38,7 @@ COPY --from=stage_build /root/php_extensions/ /root/php_extensions/
 COPY --from=stage_s3cmd /usr/lib/python*/site-packages/ /root/site-packages/
 COPY --from=stage_s3cmd /usr/bin/s3cmd /usr/bin/s3cmd
 
-RUN apk add --no-cache vim git mc python3 openssh \
+RUN apk add --no-cache vim git mc python3 openssh make \
   # copy builded extension from stage_build
   && PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && PYTHON_VERSION="$(python3 --version | egrep -o '[0-9]+.[0-9]+')" \
