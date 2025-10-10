@@ -9,8 +9,8 @@ RUN apk add --no-cache \
     libpng-dev \
     # ext soap dependency
     libxml2-dev \
-    # ext imagick dependency
-    $PHPIZE_DEPS imagemagick-dev \
+    # ext imagick and amqp dependency
+    $PHPIZE_DEPS imagemagick-dev rabbitmq-c-dev \
   && docker-php-ext-install \
     gd \
     intl \
@@ -22,6 +22,8 @@ RUN apk add --no-cache \
     # sockets \ 
   && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
   && yes '' | pecl install imagick \
+  && yes '' | pecl install amqp \
+  && yes '' | pecl install redis \
   && mkdir -p /root/php_extensions \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && mv $PHP_EXTENSIONS_PATH/* /root/php_extensions/
@@ -51,6 +53,8 @@ RUN apk add --no-cache \
   libpng \
   # ext soap dependency
   libxml2 \
+  # ext amqp dependency
+  rabbitmq-c \
   # ext imagick dependency
   imagemagick libgomp \
   # copy builded extension from stage_build
