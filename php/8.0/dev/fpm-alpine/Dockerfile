@@ -21,7 +21,7 @@ FROM sandboxspace/php-prod:8.0.0-fpm-alpine AS stage_build
 
 USER 0:0
 
-RUN apk add --no-cache $PHPIZE_DEPS \
+RUN apk add --no-cache --update $PHPIZE_DEPS linux-headers \
   && pecl install xdebug \
   && mkdir -p /root/php_extensions \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
