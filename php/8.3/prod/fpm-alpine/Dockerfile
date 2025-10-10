@@ -9,6 +9,8 @@ RUN apk add --no-cache \
     libpng-dev \
     # ext soap dependency
     libxml2-dev \
+    # ext amqp dependency
+    $PHPIZE_DEPS rabbitmq-c-dev \
     # ext imagick dependency
     # is not compatible with 8.3 yet, last version 3.7.0 from january 2022 - https://pecl.php.net/package/imagick
     # $PHPIZE_DEPS imagemagick-dev \
@@ -22,6 +24,8 @@ RUN apk add --no-cache \
     # temporary disabled because bug in 8.0 and 8.1
     # sockets \ 
   && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
+  && pecl install amqp \
+  && pecl install redis \
   # is not compatible with 8.3 yet, last version 3.7.0 from january 2022 - https://pecl.php.net/package/imagick
   # && yes '' | pecl install imagick \
   && mkdir -p /root/php_extensions \
@@ -53,6 +57,8 @@ RUN apk add --no-cache \
   libpng \
   # ext soap dependency
   libxml2 \
+  # ext amqp dependency
+  rabbitmq-c \
   # ext imagick dependency
   imagemagick libgomp \
   # copy builded extension from stage_build

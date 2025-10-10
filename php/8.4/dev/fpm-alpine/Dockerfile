@@ -23,7 +23,7 @@ USER 0:0
 COPY --from=stage_composer /usr/bin/composer /usr/bin/composer
 COPY --from=stage_build /root/php_extensions/ /root/php_extensions/
 
-RUN apk add --no-cache s3cmd vim git mc python3 openssh \
+RUN apk add --no-cache s3cmd vim git mc python3 openssh make bash \
   # copy builded extension from stage_build
   && PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && PYTHON_VERSION="$(python3 --version | egrep -o '[0-9]+.[0-9]+')" \
