@@ -59,8 +59,8 @@ RUN apk add --no-cache \
   libxml2 \
   # ext amqp dependency
   rabbitmq-c \
-  # ext imagick dependency
-  imagemagick libgomp \
+  # ext imagick dependency (imagemagick-svg adds SVG coder for PNG export)
+  imagemagick imagemagick-svg libgomp \
   # copy builded extension from stage_build
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && rm $PHP_EXTENSIONS_PATH/* \

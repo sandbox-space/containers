@@ -1,5 +1,5 @@
 PATERN_VERSION := 8.4.0-fpm-alpine
-LATEST_VERSION := 8.4.13-fpm-alpine
+LATEST_VERSION := 8.4.17-fpm-alpine
 STATIC_TAG := 8.4.latest-fpm-alpine
 
 ifeq ($(shell uname -p),arm)

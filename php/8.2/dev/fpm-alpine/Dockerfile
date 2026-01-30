@@ -9,7 +9,7 @@ FROM sandboxspace/php-prod:8.2.0-fpm-alpine AS stage_build
 USER 0:0
 
 RUN apk add --no-cache --update $PHPIZE_DEPS linux-headers \
-  && pecl install xdebug-3.2.0RC2 \
+  && pecl install xdebug \
   && mkdir -p /root/php_extensions \
   && export PHP_EXTENSIONS_PATH="$(php -i | grep '^extension_dir' | cut -d' ' -f3)" \
   && mv $PHP_EXTENSIONS_PATH/* /root/php_extensions/
